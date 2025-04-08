@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction</title>
+    <style>
+        /* Base styles with 3D theme */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #c2e9fb, #f9f9f9); /* soft light gradient */
+            color: #333;
+        }
+
+
+        .container {
+            background: linear-gradient(145deg, #ffffff, #d4d4d4);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5), -10px -10px 30px rgba(255, 255, 255, 0.3);
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            transform: perspective(800px) rotateX(0deg);
+            transition: transform 0.4s ease;
+        }
+
+        .container:hover {
+            transform: perspective(800px) rotateX(0);
+        }
+
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            color: #444;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: block;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            border-radius: 10px;
+            border: none;
+            background: #f3f3f3;
+            box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.1),
+                        inset -5px -5px 10px rgba(255, 255, 255, 0.7);
+            transition: box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            background: #e8f0fe;
+            box-shadow: inset 5px 5px 15px rgba(0, 0, 0, 0.2),
+                        inset -5px -5px 15px rgba(255, 255, 255, 0.8);
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(145deg, #4caf50, #3e8e41);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1.2em;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2),
+                        -5px -5px 15px rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #45a049, #379939);
+            transform: translateY(-3px);
+        }
+
+        #chatContainer {
+            margin-top: 30px;
+            display: none;
+        }
+
+        #chatBox {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f3f3f3;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: inset 5px 5px 15px rgba(0, 0, 0, 0.1),
+                        inset -5px -5px 15px rgba(255, 255, 255, 0.7);
+        }
+
+        .user-message, .bot-message {
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 75%;
+            word-wrap: break-word;
+            transform: scale(1);
+            transition: transform 0.2s ease;
+        }
+
+        .user-message {
+            background: linear-gradient(145deg, #d9fdd3, #b3e8a3);
+            color: #333;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background: linear-gradient(145deg, #e0e0e0, #bababa);
+            color: #333;
+            align-self: flex-start;
+        }
+        .user-message:hover, .bot-message:hover {
+            transform: scale(1.05); /* Enlarge the message */
+            z-index: 20; /* Bring it to the front */
+            font-weight: 600; /* Bold text on hover */
+        }
+        #chatInput {
+            width: calc(100% - 22px);
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: none;
+            background: #f3f3f3;
+            box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.1),
+                        inset -5px -5px 10px rgba(255, 255, 255, 0.7);
+            transition: box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        #chatInput:focus {
+            background: #e8f0fe;
+            box-shadow: inset 5px 5px 15px rgba(0, 0, 0, 0.2),
+                        inset -5px -5px 15px rgba(255, 255, 255, 0.8);
+            outline: none;
+        }
+
+        #sendButton {
+            background: linear-gradient(145deg, #007bff, #0056b3);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1em;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2),
+                        -5px -5px 15px rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #sendButton:hover {
+            background: linear-gradient(145deg, #0056b3, #003f8a);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <nav style="position: absolute; top: 20px; right: 20px;">
+        <a href="/login" style="
+            text-decoration: none;
+            background: linear-gradient(145deg, #ff9800, #f57c00);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2),
+                        -5px -5px 15px rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        ">Sign Up / Log In</a>
+    </nav>
+    
+    <div class="container">
+        <h1>Disease Prediction</h1>
+        <form id="symptomsForm">
+            <label for="symptoms">Symptoms (comma-separated): </label>
+            <input type="text" id="symptoms" name="symptoms" required>
+            <button type="submit">Submit Symptoms</button>
+        </form>
+
+        <h2>Chat with Bot</h2>
+        <div id="chatContainer">
+            <div id="chatBox"></div>
+            <input type="text" id="chatInput" placeholder="Ask a follow-up question..."><br>
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+</body>
+</html>
+
+    <script>
+        document.getElementById("symptomsForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const symptoms = document.getElementById("symptoms").value.split(',').map(symptom => symptom.trim());
+            
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symptoms })
+            });
+            
+            const data = await response.json();
+            
+            if (data.predicted_disease) {
+                alert('Disease predicted: ' + data.predicted_disease);
+                document.getElementById("chatContainer").style.display = 'block';  // Show chat section
+            }
+        });
+
+        document.getElementById("sendButton").addEventListener("click", async function() {
+            const sendButton = document.getElementById("sendButton");
+            const message = document.getElementById("chatInput").value;
+
+            // If no message is entered, do nothing
+            if (message.trim() === '') return;
+
+            // Show the user's message and a loading spinner in the button
+            const chatBox = document.getElementById("chatBox");
+            const userMessage = document.createElement("div");
+            userMessage.classList.add("user-message");
+            userMessage.textContent = message;
+            chatBox.appendChild(userMessage);
+
+            // Show loading spinner in the button
+            sendButton.innerHTML = '<div class="loading-spinner"></div> Loading...';
+
+            // Ensure chat box scrolls to the latest message
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Clear the input field after sending the question
+            document.getElementById("chatInput").value = '';
+
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+
+            // Replace the loading spinner with the original button text
+            sendButton.innerHTML = 'Send';
+
+            // Create a new message container for the bot's response
+            const messageContainer = document.createElement("div");
+            messageContainer.classList.add("message-container");
+
+            // Bot's response - split into paragraphs and bold text formatting
+            const formattedResponse = data.response.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); // Replace **text** with <b>text</b>
+            const paragraphs = formattedResponse.split('\n').filter(paragraph => paragraph.trim() !== '');
+            paragraphs.forEach(paragraph => {
+                const botMessage = document.createElement("div");
+                botMessage.classList.add("bot-message");
+                botMessage.innerHTML = paragraph; // Set innerHTML for bold text
+                messageContainer.appendChild(botMessage);
+            });
+
+            // Append the bot's response container to chat box
+            chatBox.appendChild(messageContainer);
+
+            // Ensure chat box scrolls to the latest message
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    </script>
+</body>
+</html>
